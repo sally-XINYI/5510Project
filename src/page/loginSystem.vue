@@ -48,7 +48,10 @@
                 }
             }
         },
-
+        created(){
+            var data = ''
+            this.$store.commit('SET_TOKEN', token)
+        },
         methods: {
             submitForm(formName) {
                 // this.$router.push('mainPage')
@@ -63,6 +66,7 @@
                             _this.$store.commit('SET_TOKEN', token)
                             console.log(res)
                             console.log(res.data)
+                            console.log(localStorage.getItem(token))
                             _this.$router.push("/mainPage")
                         })
                     } else {

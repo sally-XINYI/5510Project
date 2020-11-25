@@ -98,6 +98,17 @@
                 }).then(res => {
                 console.log(res.data.data)
                 _this.enterpriseData = res.data.data
+                _this.enterpriseData.reg_time = _this.enterpriseData.reg_time+'';
+                _this.enterpriseData.reg_time = _this.enterpriseData.reg_time==10?_this.enterpriseData.reg_time*1000:_this.enterpriseData.reg_time
+                var date = new Date(parseInt(_this.enterpriseData.reg_time));
+                console.log(date)
+                var y = date.getFullYear();
+                var m = date.getMonth() + 1;
+                m = m < 10 ? ('0' + m) : m;
+                var d = date.getDate();
+                d = d < 10 ? ('0' + d) : d;
+                _this.enterpriseData.reg_time = y + '-' + m + '-' + d
+                console.log(_this.enterpriseData.reg_time)
             })
         },
         methods :{

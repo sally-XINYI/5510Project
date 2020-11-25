@@ -17,6 +17,7 @@
 <!--                                <p>{{username.credict_code}}</p>-->
                             </el-form-item>
                             <el-form-item label-width="200px" label="Collaterals Present Value" prop="legal_person">
+                                <h3>{{collateral_value}}</h3>
                                 <el-button type="primary"  @click="collateralMonitor">Collaterals Present Value</el-button>
 <!--                                <p>{{username.lcollaterals_pv}}</p>-->
                             </el-form-item>
@@ -92,8 +93,8 @@
                     term: '',
                     repay_method: '',
                     amount_due: ''
-                }
-
+                },
+                collateral_value: ''
             }
         },
         components: {
@@ -108,6 +109,9 @@
                 }).then(res => {
                 console.log(res.data.data)
                 _this.enterpriseLoanData = res.data.data
+                if(res.data.data === null){
+                    location.reload()
+                }
             })
             _this.$axios({
                 method: 'get',
@@ -115,12 +119,19 @@
                 headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`},
             }).then(res => {
                 for(let i = 0; i < res.data.data.length; i++){
-                    if(res.data.data[i].settle = 'false'){
+                    console.log(res.data.data[i])
+                    if(res.data.data[i].settle === false){
                         console.log("看")
                         console.log(res.data.data[i])
                         _this.loanData = res.data.data[i]
                     }
                 }
+            })
+            _this.$axios.get("/v1/loan/collateral-value",{
+                headers :{'Authorization': `Bearer ${localStorage.getItem("token")}`}
+            }).then(res => {
+                console.log(res.data.data)
+                _this.collateral_value = res.data.data
             })
         },
         methods :{

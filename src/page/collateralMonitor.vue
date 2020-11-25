@@ -6,22 +6,22 @@
         </div>
         <el-row style="margin-top: 20px;">
             <el-row :gutter="20">
-                <el-col :span="6" style="margin-left: 50px">
+                <el-col :span="8" style="margin-left: 200px">
                     Outstanding Terms<h3>{{repaymentForm.outstandingTerms}}</h3>
                 </el-col>
-                <el-col :span="6" style="margin-left: 50px">
-                    New Balance<h3>{{repaymentForm.newBalance}}</h3>
-                </el-col>
-                <el-col :span="6" style="margin-left: 50px">
-                    Ratio<h3>{{repaymentForm.ratio}}%</h3>
-                </el-col>
-                <el-button type="primary" @click="repay">Repay</el-button>
+<!--                <el-col :span="6" style="margin-left: 50px">-->
+<!--                    New Balance<h3>{{repaymentForm.newBalance}}</h3>-->
+<!--                </el-col>-->
+<!--                <el-col :span="6" style="margin-left: 50px">-->
+<!--                    Ratio<h3>{{repaymentForm.ratio}}%</h3>-->
+<!--                </el-col>-->
+                <el-button type="primary" @click="repay">Next</el-button>
             </el-row>
         </el-row>
         <el-row style="margin-top: 20px;">
             <el-row :gutter="20">
-                <el-col :span="3" style="margin-left: 20px">
-                    <el-button @click="authenticate" type="primary">Authenticate</el-button>
+                <el-col :span="4" style="margin-left: 20px">
+                    <el-button @click="authenticate" type="primary">Authenticate Center</el-button>
                 </el-col>
                 <el-col :span="3">
                     <el-upload
@@ -42,40 +42,37 @@
                 stripe
                 style="width: 100%; margin-top: 30px">
                 <el-table-column
-                    prop="type"
-                    label="Type"
-                    width="120">
+                    prop="id"
+                    label="ID"
+                    width="200">
                 </el-table-column>
                 <el-table-column
-                    prop="_id"
-                    label="ID"
+                    prop="type"
+                    label="Type"
+                    width="250">
+                </el-table-column>
+                <el-table-column
+                    prop="collateralvalue"
+                    label="Collateral Value"
                     width="250">
                 </el-table-column>
                 <el-table-column
                     prop="presentvalue"
                     label="Present Value"
-                    width="180">
-                </el-table-column>
-                <el-table-column
-                    prop="collateralvalue"
-                    label="Collateral Value"
-                    width="180">
-                </el-table-column>
-                <el-table-column
-                    prop="status"
-                    label="Status"
-                    width="180">
+                    show-overflow-tooltip>
                 </el-table-column>
             </el-table>
         </el-row>
-<!--        <div id="chartLineBox" style="width: 90%;height: 70vh;"></div>-->
+        <div style="margin-top: 20px">
+            <div id="chartLineBox" style="width: 90%;height: 70vh;"></div>
+        </div>
     </div>
 </template>
 
 <script>
-    // import {cityGuess, addShop, searchplace, foodCategory} from '@/api/getData'
-    // import {baseUrl, baseImgPath} from '@/config/env'
+    import headTop from '@/components/headTop'
     import echarts from 'echarts'
+    import authenticCenter from "./authenticCenter";
     export default {
         data() {
             return {
@@ -89,8 +86,9 @@
                     alreadyTerm :''
                 },
                 assetData: [{
-                    type: '',
                     _id: '',
+                    id: '',
+                    type: '',
                     presentvalue: '',
                     collateralvalue: '',
                     status: ''
@@ -197,6 +195,9 @@
                         }
                         console.log(date);
                         console.log(already_term)
+                        if(already_term < 1){
+                            already_term = 0
+                        }
                         if((2 + already_term) <= 12){
                             date.month = 2 + already_term
                             _this.systemDate = date.year + '-' +  date.month + '-' +  date.date;
@@ -216,8 +217,9 @@
                     })
                 })
                 for(let i = 0; i < res.data.data.length; i++){
-                    console.log(res.data.data[i].settle)
-                    if (res.data.data[i].settle = 'false'){
+                    console.log(res.data.data[i])
+                    console.log("看")
+                    if (res.data.data[i].settle === false){
                         // 获取全部抵押的资产信息
                         console.log(res.data.data[i].collateral)
                         // _this.assetData = res.data.data[i].collateral
@@ -228,10 +230,13 @@
                             // 获取抵押资产的type
                             console.log(res.data.data[i].collateral[k].type)
                             if (res.data.data[i].collateral[k].type === 'real-estate'){
-                                var asset_id = res.data.data[i].collateral[k]._id
-                                var presentvalue = 0
-                                var collateralvalue = 0
-                                var status = 0
+                                let asset_id = res.data.data[i].collateral[k]._id
+                                console.log("看id")
+                                console.log(asset_id)
+                                let presentvalue = 0
+                                let collateralvalue = 0
+                                let status = 0
+                                let id = 0
                                 // 获取当前价值
                                 _this.$axios({
                                     method: 'get',
@@ -240,6 +245,8 @@
                                     params: {raw: 'true'},
                                     data :{assetid : 'asset_id'}
                                 }).then(res => {
+                                    console.log("获取完当前价值后的ID")
+                                    console.log(asset_id)
                                     console.log(res.data.data)
                                     presentvalue = res.data.data
                                     console.log(asset_id)
@@ -252,6 +259,8 @@
                                         params: {raw: 'false'},
                                         data :{assetid : 'asset_id'}
                                     }).then(res => {
+                                        console.log("获取完抵押价值后的ID")
+                                        console.log(asset_id)
                                         console.log(res.data.data)
                                         collateralvalue = res.data.data
                                         console.log(asset_id)
@@ -270,23 +279,29 @@
                                             }]
                                             console.log("画不出来的折线图")
                                             // 读取现在localstorage中的数组arr
-                                            var arr = JSON.parse(localStorage.getItem("axis"))
-                                            console.log(arr)
-                                            for (var n = 0; n < arr.length; n++){
-                                                _this.axisList.push(arr[n])
+                                            if(JSON.parse(localStorage.getItem("axis")) != null){
+                                                var arr = JSON.parse(localStorage.getItem("axis"))
+                                                console.log(arr)
+                                                for (var n = 0; n < arr.length; n++){
+                                                    _this.axisList.push(arr[n])
+                                                }
                                             }
                                             // 将数据重新写入localstorage的axis中
                                             _this.$store.commit('SET_AXIS',JSON.stringify(_this.axisList))
-                                            for(var a = 0; a < res.data.data.length; a++){
+                                            for (var a = 0; a < res.data.data.length; a++) {
                                                 console.log(asset_id)
-                                                if(res.data.data[a]._id === asset_id){
+                                                if (res.data.data[a]._id === asset_id) {
+                                                    id = res.data.data[a].id
                                                     status = res.data.data[a].status
                                                     console.log("我真的找不到了")
                                                     console.log(status)
                                                 }
                                             }
-                                            if(asset_id = _this.assetData[k]._id){
+                                            console.log("房产debug")
+                                            console.log(id)
+                                            if (asset_id = _this.assetData[k]._id) {
                                                 _this.$set(_this.assetData, k, {
+                                                    id : id,
                                                     type: 'real-estate',
                                                     _id: asset_id,
                                                     presentvalue: presentvalue,
@@ -303,6 +318,7 @@
                                 let presentvalue = 0
                                 let collateralvalue = 0
                                 let status = 0
+                                let id = 0
                                 // 获取当前价值
                                 _this.$axios({
                                     method: 'get',
@@ -343,10 +359,12 @@
                                             }]
                                             console.log("画不出来的折线图")
                                             // 读取现在localstorage中的数组arr
-                                            var arr = JSON.parse(localStorage.getItem("axis"))
-                                            console.log(arr)
-                                            for (var n = 0; n < arr.length; n++){
-                                                _this.axisList.push(arr[n])
+                                            if(JSON.parse(localStorage.getItem("axis")) != null){
+                                                var arr = JSON.parse(localStorage.getItem("axis"))
+                                                console.log(arr)
+                                                for (var n = 0; n < arr.length; n++){
+                                                    _this.axisList.push(arr[n])
+                                                }
                                             }
                                             // 将数据重新写入localstorage的axis中
                                             _this.$store.commit('SET_AXIS',JSON.stringify(_this.axisList))
@@ -355,6 +373,7 @@
                                             for (var a = 0; a < res.data.data.length; a++) {
                                                 console.log(asset_id)
                                                 if (res.data.data[a]._id === asset_id) {
+                                                    id = res.data.data[a].id
                                                     status = res.data.data[a].status
                                                     console.log("我真的找不到了")
                                                     console.log(status)
@@ -362,6 +381,7 @@
                                             }
                                             if (asset_id = _this.assetData[k]._id) {
                                                 _this.$set(_this.assetData, k, {
+                                                    id : id,
                                                     type: assetType,
                                                     _id: asset_id,
                                                     presentvalue: presentvalue,
@@ -372,14 +392,19 @@
                                         })
                                     })
                                 })
-
                             }
                         }
                     }
                 }
             })
         },
+        components: {
+            headTop,
+        },
         methods :{
+            authenticate(){
+              this.$router.push('authenticCenter')
+            },
             loadJsonFromFile(file, fileList) {
                 this.uploadFiles = fileList
                 this.collateralList = []
@@ -457,20 +482,21 @@
                 }).then(res => {
                     console.log(res.data.data)
                     if (res.data.data != null) {
-                        const h = this.$createElement
-                        this.$msgbox({
-                            title: 'Success',
-                            message: h('p', null, [
-                                h('span', null, 'Your repayment is success'),
-                            ]),
-                            confirmButtonText: 'Confirm',
-                            beforeClose: (action, instance, done) => {
-                                if (action === 'confirm') {
-                                    done()
-                                    location.reload()
-                                }
-                            }
-                        })
+                        location.reload()
+                        // const h = this.$createElement
+                        // this.$msgbox({
+                        //     title: 'Success',
+                        //     message: h('p', null, [
+                        //         h('span', null, 'Your repayment is success'),
+                        //     ]),
+                        //     confirmButtonText: 'Confirm',
+                        //     beforeClose: (action, instance, done) => {
+                        //         if (action === 'confirm') {
+                        //             done()
+                        //             location.reload()
+                        //         }
+                        //     }
+                        // })
                     } else {
                         const h = this.$createElement
                         this.$msgbox({
@@ -493,75 +519,96 @@
         mounted() {
             // 数据预处理
             // 读取现在localstorage中的数组arr
-            var arr = JSON.parse(localStorage.getItem("axis"))
-            var hash = [];
-            for (var i = 0; i < arr.length; i++) {
-                for (var j = i + 1; j < arr.length; j++) {
-                    if (arr[i].ratio === arr[j].ratio && arr[i].term === arr[j].term ) {
-                        ++i;
+            var arr = []
+            console.log(arr)
+            arr = JSON.parse(localStorage.getItem("axis"))
+            // var hash = [];
+            for(var i = 0; i < arr.length; i++){
+                for(var j = i + 1; j < arr.length; j++){
+                    if(arr[i].ratio === arr[j].ratio){
+                        arr.splice(j,1)
+                        j--
                     }
                 }
-                hash.push(arr[i])
             }
-            console.log("我在mounted")
-            console.log(hash)
-            // this.chartLine = echarts.init(document.getElementById('chartLineBox'));
-            // // 指定图表的配置项和数据
-            // var option = {
-            //     tooltip: {              //设置tip提示
-            //         trigger: 'axis'
-            //     },
-            //     legend: {               //设置区分（哪条线属于什么）
-            //         data:['ratio']
-            //     },
-            //     color: ['#FA6F53'],       //设置区分（每条线是什么颜色，和 legend 一一对应）
-            //     xAxis: {                //设置x轴
-            //         type: 'category',
-            //         boundaryGap: false,     //坐标轴两边不留白
-            //         // data: this.timeList,
-            //         data: ['2019-1-1', '2019-2-1', '2019-3-1', '2019-4-1', '2019-5-1', '2019-6-1', '2019-7-1',],
-            //         name: 'DATE',           //X轴 name
-            //         nameTextStyle: {        //坐标轴名称的文字样式
-            //             color: '#FA6F53',
-            //             fontSize: 16,
-            //             padding: [0, 0, 0, 20]
-            //         },
-            //         axisLine: {             //坐标轴轴线相关设置。
-            //             lineStyle: {
-            //                 color: '#FA6F53',
-            //             }
-            //         }
-            //     },
-            //     yAxis: {
-            //         name: 'RATIO CHANGE',
-            //         nameTextStyle: {
-            //             color: '#FA6F53',
-            //             fontSize: 16,
-            //             padding: [0, 0, 10, 0]
-            //         },
-            //         axisLine: {
-            //             lineStyle: {
-            //                 color: '#FA6F53',
-            //             }
-            //         },
-            //         type: 'value'
-            //     },
-            //     series: [
-            //         {
-            //             name: 'ratio',
-            //             data:  [220, 232, 201, 234, 290, 230, 220],
-            //             // 类型为折线图
-            //             type: 'line',
-            //             lineStyle: {
-            //                 normal: {
-            //                     color: '#8AE09F',
-            //                 }
-            //             },
-            //         }
-            //     ]
-            // };
-            // // 使用刚指定的配置项和数据显示图表。
-            // this.chartLine.setOption(option);
+            console.log(arr)
+            var chartList = []
+            var ratio = []
+            var term = []
+            for (var k = 0; k < arr.length; k++) {
+                if(arr[k].ratio != ''){
+                    chartList.push(arr[k])
+                }
+            }
+            for(var c = 0; c < chartList.length; c++){
+                ratio.push(chartList[c].ratio)
+                term.push(chartList[c].term)
+            }
+            // console.log(hash)
+            console.log(chartList)
+            console.log("hiiii")
+            console.log(ratio)
+            console.log(term)
+            this.chartLine = echarts.init(document.getElementById('chartLineBox'));
+            // 指定图表的配置项和数据
+            var option = {
+                //设置tip提示
+                tooltip: {
+                    trigger: 'axis'
+                },
+                // 设置区分（哪条线属于什么）
+                legend: {
+                    data:['ratio']
+                },
+                color: ['#a1bbd0'],
+                // 设置X轴
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: term,
+                    name: 'term',
+                    nameTextStyle: {
+                        color: '#a1bbd0',
+                        fontSize: 16,
+                        padding: [0, 0, 0, 20]
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#a1bbd0',
+                        }
+                    }
+                },
+                // 设置y轴
+                yAxis: {
+                    name: 'RATIO CHANGE',
+                    nameTextStyle: {
+                        color: '#a1bbd0',
+                        fontSize: 16,
+                        padding: [0, 0, 10, 0]
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#a1bbd0',
+                        }
+                    },
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: 'ratio',
+                        data: ratio,
+                        // 类型为折线图
+                        type: 'line',
+                        lineStyle: {
+                            normal: {
+                                color: '#4c5867',
+                            }
+                        },
+                    }
+                ]
+            };
+            // 使用刚指定的配置项和数据显示图表。
+            this.chartLine.setOption(option);
         }
     }
 </script>

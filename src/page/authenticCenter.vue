@@ -1,83 +1,24 @@
 <template>
     <div>
         <head-top></head-top>
+        <div style="margin-top:5px">
+            <el-breadcrumb separator="/">
+                <el-breadcrumb-item :to="{ path: '/mainPage' }">back</el-breadcrumb-item>
+            </el-breadcrumb>
+        </div>
         <el-row style="margin-top: 20px;">
             <el-row :gutter="20">
-                <el-col :span="8" style="margin-left: 100px">
-                    Unified Social Credit Code<h3>{{enterpriseBasicData._id}}</h3>
-                </el-col>
                 <el-col :span="8" style="margin-left: 50px">
                     Enterprise Name<h3>{{enterpriseBasicData.name}}</h3>
                 </el-col>
+                <el-col :span="8" style="margin-left: 100px">
+                    Unified Social Credit Code<h3>{{enterpriseBasicData.credict_code}}</h3>
+                </el-col>
             </el-row>
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="margin-top: 30px">
-                <el-tab-pane label="Real Estate" name="first">
+                <el-tab-pane label="deposit" name="first">
                     <el-table
-                        ref="realEstateTable"
-                        :data="realEstateData"
-                        tooltip-effect="dark"
-                        style="width: 100%"
-                        @selection-change="handleSelectionChange1">
-                        <el-table-column
-                            type="selection"
-                            width="55">
-                        </el-table-column>
-                        <el-table-column
-                            prop="_id"
-                            label="Enterprise ID"
-                            width="180">
-                        </el-table-column>
-                        <el-table-column
-                            prop="id"
-                            label="ID"
-                            width="100">
-                        </el-table-column>
-                        <el-table-column
-                            prop="name"
-                            label="Name"
-                            width="200">
-                        </el-table-column>
-                        <el-table-column
-                            prop="nature"
-                            label="Nature"
-                            width="100">
-                        </el-table-column>
-                        <el-table-column
-                            prop="purchase_price"
-                            label="Purchase Price"
-                            width="180">
-                        </el-table-column>
-                        <el-table-column
-                            prop="address"
-                            label="Address"
-                            width="120">
-                        </el-table-column>
-                        <el-table-column
-                            prop="purchase_date"
-                            label="Purchase Date"
-                            width="180">
-                        </el-table-column>
-                        <el-table-column
-                            prop="status"
-                            label="Status"
-                            width="100">
-                        </el-table-column>
-                        <el-table-column
-                            fixed="right"
-                            label="Operation"
-                            show-overflow-tooltip>
-                            <template slot-scope="scope">
-                                <el-button @click="downloadRealEstate" type="text" size="small">Download</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <div style="margin-top: 30px">
-                        <el-button @click="authentic1()">Authenticate</el-button>
-                    </div>
-                </el-tab-pane>
-                <el-tab-pane label="deposit" name="second">
-                    <el-table
-                        ref="depositTable"
+                        ref="multipleSelection2"
                         :data="depositData"
                         tooltip-effect="dark"
                         style="width: 100%"
@@ -85,11 +26,6 @@
                         <el-table-column
                             type="selection"
                             width="55">
-                        </el-table-column>
-                        <el-table-column
-                            prop="_id"
-                            label="Enterprise ID"
-                            width="180">
                         </el-table-column>
                         <el-table-column
                             prop="id"
@@ -109,7 +45,7 @@
                         <el-table-column
                             prop="account"
                             label="Account"
-                            width="100">
+                            width="150">
                         </el-table-column>
                         <el-table-column
                             prop="amount"
@@ -129,7 +65,7 @@
                         <el-table-column
                             prop="status"
                             label="Status"
-                            width="100">
+                            width="150">
                         </el-table-column>
                         <el-table-column
                             fixed="right"
@@ -144,9 +80,68 @@
                         <el-button @click="authentic2()">Authenticate</el-button>
                     </div>
                 </el-tab-pane>
+                <el-tab-pane label="Real Estate" name="second">
+                    <el-table
+                        ref="multipleSelection1"
+                        :data="realEstateData"
+                        tooltip-effect="dark"
+                        style="width: 100%"
+                        @selection-change="handleSelectionChange1">
+                        <el-table-column
+                            type="selection"
+                            width="55">
+                        </el-table-column>
+                        <el-table-column
+                            prop="id"
+                            label="ID"
+                            width="100">
+                        </el-table-column>
+                        <el-table-column
+                            prop="name"
+                            label="Name"
+                            width="200">
+                        </el-table-column>
+                        <el-table-column
+                            prop="nature"
+                            label="Nature"
+                            width="150">
+                        </el-table-column>
+                        <el-table-column
+                            prop="purchase_price"
+                            label="Purchase Price"
+                            width="180">
+                        </el-table-column>
+                        <el-table-column
+                            prop="address"
+                            label="Address"
+                            width="120">
+                        </el-table-column>
+                        <el-table-column
+                            prop="purchase_date"
+                            label="Purchase Date"
+                            width="180">
+                        </el-table-column>
+                        <el-table-column
+                            prop="status"
+                            label="Status"
+                            width="150">
+                        </el-table-column>
+                        <el-table-column
+                            fixed="right"
+                            label="Operation"
+                            show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <el-button @click="downloadRealEstate" type="text" size="small">Download</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div style="margin-top: 30px">
+                        <el-button @click="authentic1()">Authenticate</el-button>
+                    </div>
+                </el-tab-pane>
                 <el-tab-pane label="receivables" name="third">
                     <el-table
-                        ref="receivablesTable"
+                        ref="multipleSelection3"
                         :data="receivabelsData"
                         tooltip-effect="dark"
                         style="width: 100%"
@@ -156,14 +151,9 @@
                             width="55">
                         </el-table-column>
                         <el-table-column
-                            prop="_id"
-                            label="Enterprise ID"
-                            width="130">
-                        </el-table-column>
-                        <el-table-column
                             prop="id"
                             label="ID"
-                            width="80">
+                            width="100">
                         </el-table-column>
                         <el-table-column
                             prop="payer_name"
@@ -183,7 +173,7 @@
                         <el-table-column
                             prop="payee_name"
                             label="Payee Name"
-                            width="140">
+                            width="130">
                         </el-table-column>
                         <el-table-column
                             prop="amount"
@@ -193,17 +183,17 @@
                         <el-table-column
                             prop="invoice_date"
                             label="Invoice Date"
-                            width="100">
+                            width="135">
                         </el-table-column>
                         <el-table-column
                             prop="payment_due"
                             label="Payment Due"
-                            width="100">
+                            width="135">
                         </el-table-column>
                         <el-table-column
                             prop="status"
                             label="Status"
-                            width="100">
+                            width="150">
                         </el-table-column>
                         <el-table-column
                             fixed="right"
@@ -224,19 +214,16 @@
 </template>
 
 <script>
-    import headTop from '@/components/headTop'
-    // import {getRealEstateList, getDepositList, getReceivablesList} from '@/api/getData'
     export default {
         data() {
             return {
                 credict_code :'',
                 name: '',
                 enterpriseBasicData: [{
-                    _id:'',
+                    credit_code:'',
                     name:''
                 }],
                 realEstateData: [{
-                    _id: '1',
                     id: '1',
                     name: '1',
                     nature: '1',
@@ -247,7 +234,6 @@
                     is_authentic: ''
                 }],
                 depositData:[{
-                    _id: '2',
                     id: '2',
                     bank: '2',
                     name: '2',
@@ -259,7 +245,6 @@
                     is_authentic: ''
                 }],
                 receivabelsData: [{
-                    _id: '3',
                     id: '3',
                     payer_name: '3',
                     payer_industry: '3',
@@ -298,21 +283,53 @@
                 }).then(res => {
                 console.log(res.data.data)
                 _this.depositData = res.data.data
+                // deposit_date expiration_date时间戳转换
+                for(var i = 0; i < _this.depositData.length; i++){
+                    _this.depositData[i].deposit_date = _this.depositData[i].deposit_date+'';
+                    _this.depositData[i].expiration_date = _this.depositData[i].expiration_date+'';
+                    _this.depositData[i].deposit_date = _this.depositData[i].deposit_date.length==10?_this.depositData[i].deposit_date*1000:_this.depositData[i].deposit_date
+                    _this.depositData[i].expiration_date = _this.depositData[i].expiration_date.length==10?_this.depositData[i].expiration_date*1000:_this.depositData[i].expiration_date
+                    var date = new Date(parseInt(_this.depositData[i].deposit_date));
+                    var date1 = new Date(parseInt(_this.depositData[i].expiration_date));
+                    console.log(date)
+                    var y = date.getFullYear();
+                    var m = date.getMonth() + 1;
+                    m = m < 10 ? ('0' + m) : m;
+                    var d = date.getDate();
+                    d = d < 10 ? ('0' + d) : d;
+                    var y1 = date1.getFullYear();
+                    var m1 = date1.getMonth() + 1;
+                    m1 = m1 < 10 ? ('0' + m1) : m1;
+                    var d1 = date1.getDate();
+                    d1 = d1 < 10 ? ('0' + d1) : d1;
+                    _this.depositData[i].deposit_date = y + '-' + m + '-' + d
+                    _this.depositData[i].expiration_date = y1 + '-' + m1 + '-' + d1
+                    console.log(_this.depositData[i].deposit_date)
+                }
             })
             _this.$axios.get("/v1/enterprise/estate",
                 {
                     headers :{'Authorization': `Bearer ${localStorage.getItem("token")}`}
                 }).then(res => {
                 console.log(res.data.data)
-                console.log(res.data.data.purchase_date)
                 _this.realEstateData = res.data.data
-                // var timestamp = new Date(parseInt(res.data.data.purchase_date))
-                // var year = 1990 + timestamp.getFullYear();
-                // var month = "0" + (timestamp.getMonth() + 1);
-                // var date = "0" + timestamp.getDate();
-                // console.log(year)
-                // console.log(month)
-                // console.log(date)
+                console.log("时间戳")
+                console.log(_this.realEstateData.length)
+                // purchase_date时间戳转换
+                for(var i = 0; i < _this.realEstateData.length; i++){
+                    console.log(_this.realEstateData[i].purchase_date)
+                    _this.realEstateData[i].purchase_date = _this.realEstateData[i].purchase_date+'';
+                    _this.realEstateData[i].purchase_date = _this.realEstateData[i].purchase_date.length==10?_this.realEstateData[i].purchase_date*1000:_this.realEstateData[i].purchase_date
+                    var date = new Date(parseInt(_this.realEstateData[i].purchase_date));
+                    console.log(date)
+                    var y = date.getFullYear();
+                    var m = date.getMonth() + 1;
+                    m = m < 10 ? ('0' + m) : m;
+                    var d = date.getDate();
+                    d = d < 10 ? ('0' + d) : d;
+                    _this.realEstateData[i].purchase_date = y + '-' + m + '-' + d
+                    console.log(_this.realEstateData[i].purchase_date)
+                }
             })
             _this.$axios.get("/v1/enterprise/receivable",
                 {
@@ -320,10 +337,29 @@
                 }).then(res => {
                 console.log(res.data.data)
                 _this.receivabelsData = res.data.data
+                // invoice_date payment_due时间戳转换
+                for(var i = 0; i < _this.receivabelsData.length; i++){
+                    _this.receivabelsData[i].invoice_date = _this.receivabelsData[i].invoice_date+'';
+                    _this.receivabelsData[i].payment_due = _this.receivabelsData[i].payment_due+'';
+                    _this.receivabelsData[i].invoice_date = _this.receivabelsData[i].invoice_date.length==10?_this.receivabelsData[i].invoice_date*1000:_this.receivabelsData[i].invoice_date
+                    _this.receivabelsData[i].payment_due = _this.receivabelsData[i].payment_due==10?_this.receivabelsData[i].payment_due*1000:_this.receivabelsData[i].payment_due
+                    var date = new Date(parseInt(_this.receivabelsData[i].invoice_date));
+                    var date1 = new Date(parseInt(_this.receivabelsData[i].payment_due));
+                    console.log(date)
+                    var y = date.getFullYear();
+                    var m = date.getMonth() + 1;
+                    m = m < 10 ? ('0' + m) : m;
+                    var d = date.getDate();
+                    d = d < 10 ? ('0' + d) : d;
+                    var y1 = date1.getFullYear();
+                    var m1 = date1.getMonth() + 1;
+                    m1 = m1 < 10 ? ('0' + m1) : m1;
+                    var d1 = date1.getDate();
+                    d1 = d1 < 10 ? ('0' + d1) : d1;
+                    _this.receivabelsData[i].invoice_date = y + '-' + m + '-' + d
+                    _this.receivabelsData[i].payment_due = y1 + '-' + m1 + '-' + d1
+                }
             })
-        },
-        components: {
-            headTop,
         },
         methods :{
             download(){
@@ -379,8 +415,9 @@
                                             if (res.data.data != 404) {
                                                 // 将is_authentic标志设置为真
                                                 halo.is_authentic = true
+                                                this.$refs.multipleSelection1.clearSelection()
                                                 this.$notify({
-                                                    title: halo._id + '\n' + 'Authentic Success',
+                                                    title: halo.id + '\n' + 'Authentic Success',
                                                     message: 'Please download the verification and apply for a loan in one hour.',
                                                     type: 'success'
                                                 });
@@ -388,7 +425,7 @@
                                                 // 将is_authentic标志设置为假
                                                 halo.is_authentic = false
                                                 this.$notify.error({
-                                                    title: halo._id + '\n' + 'Authentic Fail',
+                                                    title: halo.id + '\n' + 'Authentic Fail',
                                                     message: 'Please check your asset.',
                                                 })
                                             }
@@ -446,8 +483,9 @@
                                             if (res.data.data != 404) {
                                                 // 将is_authentic标志设置为真
                                                 halo.is_authentic = true
+                                                this.$refs.multipleSelection2.clearSelection()
                                                 this.$notify({
-                                                    title: halo._id + '\n' + 'Authentic Success',
+                                                    title: halo.id + '\n' + 'Authentic Success',
                                                     message: 'Please download the verification and apply for a loan in one hour.',
                                                     type: 'success'
                                                 });
@@ -455,7 +493,7 @@
                                                 // 将is_authentic标志设置为假
                                                 halo.is_authentic = false
                                                 this.$notify.error({
-                                                    title: halo._id + '\n' + 'Authentic Fail',
+                                                    title: halo.id + '\n' + 'Authentic Fail',
                                                     message: 'Please check your asset.',
                                                 })
                                             }
@@ -502,6 +540,7 @@
                                         }
                                     ).then(res => {
                                         console.log(res.data.data)
+                                        this.$refs.multipleSelection3.clearSelection()
                                         console.log(i)
                                         console.log(halo._id)
                                         done()
@@ -513,7 +552,7 @@
                                                 // 将is_authentic标志设置为真
                                                 halo.is_authentic = true
                                                 this.$notify({
-                                                    title: halo._id + '\n' + 'Authentic Success',
+                                                    title: halo.id + '\n' + 'Authentic Success',
                                                     message: 'Please download the verification and apply for a loan in one hour.',
                                                     type: 'success'
                                                 });
@@ -521,7 +560,7 @@
                                                 // 将is_authentic标志设置为假
                                                 halo.is_authentic = false
                                                 this.$notify.error({
-                                                    title: halo._id + '\n' + 'Authentic Fail',
+                                                    title: halo.id + '\n' + 'Authentic Fail',
                                                     message: 'Please check your asset.',
                                                 })
                                             }
@@ -556,7 +595,7 @@
                             var blob = new Blob([res.data.data], {type: 'text/json'}),
                                 e = document.createEvent('MouseEvents'),
                                 a = document.createElement('a')
-                            filename = halo._id
+                            filename = halo.id
                             a.download = filename
                             a.href = window.URL.createObjectURL(blob)
                             a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
@@ -589,7 +628,7 @@
                             var blob = new Blob([res.data.data], {type: 'text/json'}),
                                 e = document.createEvent('MouseEvents'),
                                 a = document.createElement('a')
-                            filename = halo._id
+                            filename = halo.id
                             a.download = filename
                             a.href = window.URL.createObjectURL(blob)
                             a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
@@ -621,7 +660,7 @@
                             var blob = new Blob([res.data.data], {type: 'text/json'}),
                                 e = document.createEvent('MouseEvents'),
                                 a = document.createElement('a')
-                            filename = halo._id
+                            filename = halo.id
                             a.download = filename
                             a.href = window.URL.createObjectURL(blob)
                             a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')

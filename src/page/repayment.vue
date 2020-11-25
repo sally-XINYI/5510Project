@@ -23,14 +23,14 @@
                     </el-row>
                     <el-row>
                         <el-col :span="12">
-                            <el-form-item label-width="220px"label="New Balance" prop="newBalance">
+                            <el-form-item label-width="220px"label="Payable" prop="newBalance">
                                 <h3>{{repaymentForm.newBalance}}</h3>
 <!--                                <el-input v-model.number="repaymentForm.nextrepaymentamount"></el-input>-->
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label-width="220px" label="Next Repayment Date" prop="nextrepaymentdate">
-                                <h3>{{nextRepaymentDate}}</h3>
+                                <h3>{{systemDate}}</h3>
 <!--                                <el-input v-model.number="repaymentForm.nextrepaymentdate"></el-input>-->
                             </el-form-item>
                         </el-col>
@@ -57,7 +57,9 @@
                     outstandingTerms: '',
                     newBalance: '',
                     paymentDueDate: '',
-                    repaymentamount: ''
+                    repaymentamount: '',
+                    ratio: '',
+                    alreadyTerm :''
                 },
                 billForm: {
                     amount_total: '',
@@ -67,7 +69,6 @@
                     _id: ''
                 },
                 systemDate: '',
-                nextRepaymentDate: ''
             }
         },
         components: {
@@ -119,6 +120,28 @@
                     console.log(res.data.data.term)
                     // 已经还的期限
                     var already_term = res.data.data.term - _this.repaymentForm.outstandingTerms
+                    _this.repaymentForm.alreadyTerm = already_term
+                    _this.$axios.get("/v1/loan/collateral-value",{
+                        headers :{'Authorization': `Bearer ${localStorage.getItem("token")}`}
+                    }).then(res => {
+                        console.log(res.data.data)
+                        _this.total_amount = res.data.data
+                        _this.repaymentForm.ratio = (1 - _this.repaymentForm.outstandingBalance / _this.total_amount) * 100
+                        // 绘制图像
+                        _this.axisList = [{
+                            ratio: _this.repaymentForm.ratio,
+                            term: _this.repaymentForm.alreadyTerm
+                        }]
+                        console.log("画不出来的折线图")
+                        // 读取现在localstorage中的数组arr
+                        var arr = JSON.parse(localStorage.getItem("axis"))
+                        console.log(arr)
+                        for (var n = 0; n < arr.length; n++){
+                            _this.axisList.push(arr[n])
+                        }
+                        // 将数据重新写入localstorage的axis中
+                        _this.$store.commit('SET_AXIS',JSON.stringify(_this.axisList))
+                    })
                     // 默认贷款申请时间2020-1-1, 进行第一期还款时就位2020-2-1
                     let date = {
                         year : '2020',
@@ -127,20 +150,9 @@
                     }
                     console.log(date);
                     console.log(already_term)
-                    // // 绘制图像
-                    // _this.axisList = [{
-                    //     ratio: _this.repaymentForm.ratio,
-                    //     term: _this.repaymentForm.alreadyTerm
-                    // }]
-                    // console.log("画不出来的折线图")
-                    // // 读取现在localstorage中的数组arr
-                    // var arr = JSON.parse(localStorage.getItem("axis"))
-                    // console.log(arr)
-                    // for (var n = 0; n < arr.length; n++){
-                    //     _this.axisList.push(arr[n])
-                    // }
-                    // // 将数据重新写入localstorage的axis中
-                    // _this.$store.commit('SET_AXIS',JSON.stringify(_this.axisList))
+                    if(already_term < 1){
+                        already_term = 0
+                    }
                     if((2 + already_term) <= 12){
                         date.month = 2 + already_term
                         _this.systemDate = date.year + '-' +  date.month + '-' +  date.date;
@@ -157,22 +169,6 @@
                         date.month = 2 +already_term -36
                         date.year = 2020 + 3
                         _this.systemDate = date.year + '-' +  date.month + '-' +  date.date;
-                    }if((3 + already_term) <= 12){
-                        date.month = 3 + already_term
-                        _this.nextRepaymentDate = date.year + '-' +  date.month + '-' +  date.date;
-                    }if((3 + already_term) > 12 && (3 + already_term) <= 24){
-                        console.log("shijiandebug")
-                        date.month = 3 + already_term -12
-                        date.year = 2020 + 1
-                        _this.nextRepaymentDate = date.year + '-' +  date.month + '-' +  date.date;
-                    }if((3 + already_term) > 24 && (3 + already_term) <= 36){
-                        date.month = 3 +already_term -24
-                        date.year = 2020 + 2
-                        _this.nextRepaymentDate = date.year + '-' +  date.month + '-' +  date.date;
-                    }if((3 + already_term) > 36){
-                        date.month = 3 +already_term -36
-                        date.year = 2020 + 3
-                        _this.nextRepaymentDate = date.year + '-' +  date.month + '-' +  date.date;
                     }
                 })
             })

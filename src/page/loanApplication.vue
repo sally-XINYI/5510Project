@@ -24,7 +24,7 @@
                         <el-input v-model="loanData.loan_amount"></el-input>
                     </el-form-item>
                     <el-form-item label-width="200px" label="Period">
-                        <el-select v-model="value" placeholder="Please select">
+                        <el-select v-model="value" placeholder="Please select" @change="change()">
                             <el-option
                                 v-for="item in options"
                                 :key="item.value"
@@ -33,15 +33,21 @@
                             </el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label-width="200px" label="Repayment Type">
-                        <el-select v-model="value1" placeholder="Please select">
-                            <el-option
-                                v-for="item in options1"
-                                :key="item.value1"
-                                :label="item.label1"
-                                :value="item.value1">
-                            </el-option>
-                        </el-select>
+<!--                    <el-form-item label-width="200px" label="Repayment Type">-->
+<!--                        <el-select v-model="value1" placeholder="Please select" @change="change1()">-->
+<!--                            <el-option-->
+<!--                                v-for="item in options1"-->
+<!--                                :key="item.value1"-->
+<!--                                :label="item.label1"-->
+<!--                                :value="item.value1">-->
+<!--                            </el-option>-->
+<!--                        </el-select>-->
+<!--                    </el-form-item>-->
+                    <el-form-item label-width="200px" label="Repayment Type" prop="value1">
+                        <h3>{{value1}}</h3>
+                    </el-form-item>
+                    <el-form-item label-width="200px" label="Rate" prop="rate">
+                        <h3>{{rate}}</h3>
                     </el-form-item>
                 </el-form>
                 <el-row>
@@ -115,18 +121,19 @@
                     label: '3 years'
                 }],
                 value: '',
-                options1: [{
-                    value1: 'Lump Sum',
-                    label1: 'Lump Sum'
-                }, {
-                    value1: 'By Installment',
-                    label1: 'By Installment'
-                }],
+                // options1: [{
+                //     value1: 'Lump Sum',
+                //     label1: 'Lump Sum'
+                // }, {
+                //     value1: 'By Installment',
+                //     label1: 'By Installment'
+                // }],
                 value1: '',
                 uploadFiles: [],
                 collateralList: [],
                 max_amount: '0',
-                systemDate: ''
+                systemDate: '',
+                rate: ''
             }
         },
         created(){
@@ -144,21 +151,20 @@
                     headers :{'Authorization': `Bearer ${localStorage.getItem("token")}`}
                 }).then(res => {
                 console.log(res.data.data)
-                if(res.data.data !== null){
-                    const h = this.$createElement
-                    this.$msgbox({
-                        title: 'Alert',
-                        message: h('p', null, [
-                            h('span', null, 'You have unsettle loan! '),
-                        ]),
-                        confirmButtonText: 'Confirm',
-                        beforeClose: (action, instance, done) => {
-                            done()
-                        }
-                    })
-                }
+                // if(res.data.data !== null){
+                //     const h = this.$createElement
+                //     this.$msgbox({
+                //         title: 'Alert',
+                //         message: h('p', null, [
+                //             h('span', null, 'You have unsettle loan! '),
+                //         ]),
+                //         confirmButtonText: 'Confirm',
+                //         beforeClose: (action, instance, done) => {
+                //             done()
+                //         }
+                //     })
+                // }
             })
-
             // 用2020-1-1初始化贷款申请时间
             let nowDate = new Date();
             let date = {
@@ -179,6 +185,49 @@
             headTop,
         },
         methods: {
+            change(){
+                const _this = this
+                if(_this.value === '7 days'){
+                    _this.rate = '4.5'
+                    _this.value1 = 'Lump Sum'
+                }
+                if(_this.value === '14 days'){
+                    _this.rate = '4.25'
+                    _this.value1 = 'Lump Sum'
+                }
+                if(_this.value === '30 days'){
+                    _this.rate = '4.25'
+                    _this.value1 = 'Lump Sum'
+                }
+                if(_this.value === '60 days'){
+                    _this.rate = '4.25'
+                    _this.value1 = 'By Installment'
+                }
+                if(_this.value === '90 days'){
+                    _this.rate = '4.3'
+                    _this.value1 = 'By Installment'
+                }
+                if(_this.value === '180 days'){
+                    _this.rate = '4.35'
+                    _this.value1 = 'By Installment'
+                }
+                if(_this.value === '270 days'){
+                    _this.rate = '4.4'
+                    _this.value1 = 'By Installment'
+                }
+                if(_this.value === '1 year'){
+                    _this.rate = '4.5'
+                    _this.value1 = 'By Installment'
+                }
+                if(_this.value === '2 years'){
+                    _this.rate = '4.6'
+                    _this.value1 = 'By Installment'
+                }
+                if(_this.value === '3 years'){
+                    _this.rate = '4.75'
+                    _this.value1 = 'By Installment'
+                }
+            },
             loadJsonFromFile(file, fileList) {
                 this.uploadFiles = fileList
                 this.collateralList = []
@@ -189,13 +238,16 @@
                     message: h('p', null, [
                         h('span', null, 'Submit Success. '),
                     ]),
-                    confirmButtonText: 'Verify',
+                    confirmButtonText: 'Confirm',
                     beforeClose: (action, instance, done) => {
                         if (action === 'confirm') {
                             done()
                             this.max_amount = 0
                             // 对文件列表进行资产认证
-                            for(var i = 0; i<this.uploadFiles.length; i++) {
+                            for(var i = 0; i < this.uploadFiles.length ; i++) {
+                                console.log("一轮")
+                                console.log(i)
+                                console.log(this.uploadFiles.length)
                                 let file = this.uploadFiles[i]
                                 let reader = new FileReader()
                                 reader.readAsText(file.raw)
@@ -213,15 +265,15 @@
                                         }
                                     ).then((res) => {
                                         console.log(res.data.data)
-                                        if(res.data.data !== null){
-                                            if(res.data.data.data.type === 'real-estate'){
+                                        if (res.data.data !== null) {
+                                            if (res.data.data.data.type === 'real-estate') {
                                                 type = 'estate'
-                                            }else{
+                                            } else {
                                                 var type = res.data.data.data.type
                                             }
-                                            this.$axios.get("/v1/enterprise/" + type + "/" + file.name + "/value",
+                                            this.$axios.get("/v1/enterprise/" + type + "/" + res.data.data.data._id + "/value",
                                                 {
-                                                    headers :{'Authorization': `Bearer ${localStorage.getItem("token")}`}
+                                                    headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}
                                                 }
                                             ).then((res) => {
                                                 console.log(res.data.data)
@@ -230,14 +282,14 @@
                                             this.$notify({
                                                 title: 'Success',
                                                 message: h('p', null, [
-                                                    h('i', { style: 'word-break: break-all' }, file.name + ' is verify successful.')]),
+                                                    h('i', {style: 'word-break: break-all'}, file.name + ' is available.')]),
                                                 type: 'success'
                                             });
-                                        } else{
+                                        } else {
                                             this.$notify.error({
                                                 title: 'Error',
                                                 message: h('p', null, [
-                                                    h('i', { style: 'word-break: break-all' }, file.name + ' is verify fail.')]),
+                                                    h('i', {style: 'word-break: break-all'}, file.name + ' is not available.')]),
                                             });
                                         }
                                     })
@@ -247,6 +299,21 @@
                                             instance.confirmButtonLoading = false;
                                         }, 300);
                                     }, 3000);
+                                }
+                                for (var m =i+1; m < this.uploadFiles.length; m++) {
+                                    console.log("二轮")
+                                    console.log(i)
+                                    console.log(this.uploadFiles.length)
+                                    if(this.uploadFiles[i].name === this.uploadFiles[m].name) {
+                                        console.log("文件重复")
+                                        this.uploadFiles.splice(m, 1)
+                                        m--
+                                        this.$notify.error({
+                                            title: 'Error',
+                                            message: h('p', null, [
+                                                h('i', {style: 'word-break: break-all'}, 'You have repeat file.')]),
+                                        })
+                                    }
                                 }
                             }
                         }
@@ -293,7 +360,7 @@
                                                 }else{
                                                     var type = res.data.data.data.type
                                                 }
-                                                this.$axios.get("/v1/enterprise/" + type + "/" + file.name + "/value",
+                                                this.$axios.get("/v1/enterprise/" + type + "/" + res.data.data.data._id + "/value",
                                                     {
                                                         headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}
                                                     }
@@ -380,7 +447,10 @@
                                     beforeClose: (action, instance, done) => {
                                         if (action === 'confirm') {
                                             done()
-                                            location.reload()
+                                            // location.reload()
+                                            var arr = []
+                                            this.$store.commit('SET_AXIS',JSON.stringify(arr))
+                                            this.$router.push('mainPage')
                                         }
                                     }
                                 })
@@ -395,6 +465,7 @@
                                     beforeClose: (action, instance, done) => {
                                         if (action === 'confirm') {
                                             done()
+                                            this.$router.push('mainPage')
                                         }
                                     }
                                 })
